@@ -9,6 +9,7 @@
     <LangVersion>latest</LangVersion>
     <PlatformTarget>x64</PlatformTarget>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\pcopti.ico</ApplicationIcon>
     <AssemblyName>PCOpti</AssemblyName>
     <RootNamespace>PCOpti</RootNamespace>
 
@@ -35,6 +36,10 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="PCOpti.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\pcopti.ico" />
   </ItemGroup>
 
 </Project>

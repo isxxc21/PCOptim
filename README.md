@@ -1,7 +1,5 @@
 <p align="center">
-  <img src="docs/images/logo.png" alt="PCOpti logo" width="120" />
-  <!-- Logo placeholder: add docs/images/logo.png (256x256 recommended). -->
-</p>
+  <img src="docs/images/logo.png" alt="PCOpti logo" width="120" /></p>
 
 <h1 align="center">PCOpti</h1>
 
@@ -51,19 +49,27 @@ Most "PC boosters" press one big button, change dozens of settings you can't see
 
 ## Download and install
 
-1. Go to the [**latest release**](https://github.com/isxxc21/PCOptim/releases/latest).
-2. Download `PCOpti-vX.Y.Z-win-x64.zip` and extract it anywhere (for example `C:\Tools\PCOpti`).
-3. Run `PCOpti.exe` and accept the administrator prompt. PCOpti needs admin rights because most settings it changes are system-wide.
+### Installer (recommended)
 
-That's it. There is no installer and nothing else to download: the .exe is self-contained and doesn't need .NET installed.
+1. Go to the [**latest release**](https://github.com/isxxc21/PCOptim/releases/latest) and download **`PCOpti-Setup-vX.Y.Z.exe`**.
+2. Run it and click through the setup. It installs PCOpti to `Program Files` and adds a Start menu shortcut (and a desktop shortcut if you tick the box).
+3. Launch PCOpti from the Start menu and accept the administrator prompt. PCOpti needs admin rights because most settings it changes are system-wide.
+
+Nothing else is needed: .NET is built in. To uninstall, use **Settings > Apps > Installed apps > PCOpti**.
+Uninstalling doesn't undo PCOpti's changes, so run **Backup & Restore > Revert all** first if you want them undone.
+Your backups are kept, so you can also reinstall later and revert then.
+
+### Portable (no install)
+
+Download `PCOpti-vX.Y.Z-win-x64-portable.zip`, extract it anywhere and run `PCOpti.exe`.
 
 **Requirements:** Windows 10 (version 2004 or newer) or Windows 11, 64-bit.
 
-**Optional, verify the download:** every release includes a `.sha256` file. In PowerShell:
+**Optional, verify the download:** every release includes `SHA256SUMS.txt`. In PowerShell:
 ```powershell
-Get-FileHash .\PCOpti-v1.0.0-win-x64.zip -Algorithm SHA256
+Get-FileHash .\PCOpti-Setup-v1.0.0.exe -Algorithm SHA256
 ```
-The hash should match the one in the `.sha256` file.
+The hash should match the one in `SHA256SUMS.txt`.
 
 ### "Windows protected your PC" (SmartScreen)
 

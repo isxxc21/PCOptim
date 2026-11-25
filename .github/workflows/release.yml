@@ -43,15 +43,26 @@ jobs:
           -p:Version=${{ steps.version.outputs.version }}
           -o publish
 
-      - name: Zip and checksum
+      - name: Build installer (Inno Setup)
         shell: pwsh
         run: |
-          $name = "PCOpti-${{ steps.version.outputs.tag }}-win-x64"
+          choco install innosetup -y --no-progress
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=${{ steps.version.outputs.version }}" installer\PCOpti.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed" }
+          Move-Item "installer\Output\PCOpti-Setup-v${{ steps.version.outputs.version }}.exe" "PCOpti-Setup-${{ steps.version.outputs.tag }}.exe"
+
+      - name: Zip portable version and write checksums
+        shell: pwsh
+        run: |
+          $tag = "${{ steps.version.outputs.tag }}"
+          $zip = "PCOpti-$tag-win-x64-portable.zip"
           Copy-Item LICENSE, README.md publish/
-          Compress-Archive -Path publish/PCOpti.exe, publish/LICENSE, publish/README.md -DestinationPath "$name.zip"
-          $hash = (Get-FileHash "$name.zip" -Algorithm SHA256).Hash.ToLower()
-          "$hash  $name.zip" | Out-File -Encoding ascii "$name.zip.sha256"
-          Get-Content "$name.zip.sha256"
+          Compress-Archive -Path publish/PCOpti.exe, publish/LICENSE, publish/README.md -DestinationPath $zip
+          $lines = foreach ($f in @("PCOpti-Setup-$tag.exe", $zip)) {
+            "$((Get-FileHash $f -Algorithm SHA256).Hash.ToLower())  $f"
+          }
+          $lines | Out-File -Encoding ascii "SHA256SUMS.txt"
+          Get-Content "SHA256SUMS.txt"
 
       - name: Create GitHub Release
         shell: pwsh
@@ -59,7 +70,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "${{ steps.version.outputs.tag }}"
-          $ghArgs = @($tag, "PCOpti-$tag-win-x64.zip", "PCOpti-$tag-win-x64.zip.sha256",
+          $ghArgs = @($tag, "PCOpti-Setup-$tag.exe", "PCOpti-$tag-win-x64-portable.zip", "SHA256SUMS.txt",
                       "--title", "PCOpti $tag", "--generate-notes", "--verify-tag")
           if ("${{ steps.version.outputs.prerelease }}" -eq "True") { $ghArgs += "--prerelease" }
           gh release create @ghArgs

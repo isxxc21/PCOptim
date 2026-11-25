@@ -486,3 +486,4 @@ $RECYCLE.BIN/
 # PCOpti local publish output
 publish/
 *.zip
+installer/Output/

@@ -21,7 +21,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - **Backup & Restore**: an automatic backup before every change, a per-tweak Revert, "Revert all PCOpti changes",
   an optional System Restore point and a change log you can view.
 - **Settings**: accent colour, and an update check that only notifies (off by default).
-- Release workflow that publishes a self-contained single-file `PCOpti.exe`.
+- Windows installer (`PCOpti-Setup-vX.Y.Z.exe`, built with Inno Setup): installs to Program Files, adds Start menu
+  and optional desktop shortcuts, and uninstalls cleanly from Settings > Apps.
+- Portable single-file `PCOpti.exe` (zip), self-contained, so no .NET install is needed.
+- App icon.
 
 [Unreleased]: https://github.com/isxxc21/PCOptim/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/isxxc21/PCOptim/releases/tag/v1.0.0
