@@ -1,0 +1,31 @@
+name: Feature or tweak request
+description: Suggest a new tweak or an improvement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        PCOpti only adds tweaks with a **real, measurable effect**. Please include evidence such as benchmarks,
+        Microsoft documentation, or a reproducible test. Placebo tweaks will be closed politely.
+  - type: textarea
+    id: idea
+    attributes:
+      label: What should PCOpti do?
+      description: Describe the tweak or feature. For a tweak, which setting does it change (registry key, service, command)?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence it works
+      description: Benchmarks, links to documentation, or how you measured it. Who benefits, and by how much?
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and how to undo it
+      description: What could go wrong? How is it reverted?
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Suggested risk level
+      options: ["Safe", "Moderate", "Advanced", "Not sure"]

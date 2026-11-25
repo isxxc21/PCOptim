@@ -1,0 +1,66 @@
+<UserControl x:Class="PCOpti.Views.CleanerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36,6,36,32" MaxWidth="1060">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" VerticalAlignment="Top" Command="{Binding ScanAllCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" Text="&#xE721;" FontSize="13" Margin="0,0,8,0" />
+                        <TextBlock Text="Scan all" />
+                    </StackPanel>
+                </Button>
+                <StackPanel>
+                    <TextBlock Text="Cleaner" Style="{StaticResource PageTitle}" />
+                    <TextBlock Style="{StaticResource PageSubtitle}" Margin="0,4,20,0"
+                               Text="Frees disk space. Each category shows exactly how much it would free before anything is deleted, and always asks you first. Cleaning frees space; it doesn't make games run faster." />
+                </StackPanel>
+            </DockPanel>
+
+            <TextBlock Text="{Binding TotalText}" Margin="2,16,0,12" FontWeight="SemiBold" />
+
+            <ItemsControl ItemsSource="{Binding Items}" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource CardTitle}" />
+                                    <TextBlock Text="{Binding Description}" Style="{StaticResource BodyText}" Margin="0,6,0,0" />
+                                    <TextBlock Margin="0,10,0,0" FontSize="13">
+                                        <Run Text="Can free: " Foreground="{StaticResource SubtleTextBrush}" />
+                                        <Run Text="{Binding SizeText, Mode=OneWay}" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding ResultMessage}" Margin="0,6,0,0" FontSize="12" TextWrapping="Wrap"
+                                               Visibility="{Binding ResultMessage, Converter={StaticResource NotEmptyToVis}}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ResultIsError}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <ProgressBar Style="{StaticResource BusyBar}" Margin="0,10,0,0"
+                                                 Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Top" MinWidth="104">
+                                    <Button Content="Scan" Command="{Binding ScanCommand}" Margin="0,0,0,8" />
+                                    <Button Content="Clean..." Style="{StaticResource DangerButton}" Command="{Binding CleanCommand}"
+                                            ToolTip="Shows the size and asks for confirmation before deleting anything." />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

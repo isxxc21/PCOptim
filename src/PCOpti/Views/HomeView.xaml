@@ -1,0 +1,113 @@
+<UserControl x:Class="PCOpti.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style x:Key="StatLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource SubtleTextBrush}" />
+        </Style>
+        <Style x:Key="StatValue" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
+            <Setter Property="FontSize" Value="32" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,6,0,10" />
+        </Style>
+        <Style x:Key="StepNumber" TargetType="Border">
+            <Setter Property="Width" Value="26" />
+            <Setter Property="Height" Value="26" />
+            <Setter Property="CornerRadius" Value="13" />
+            <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Margin" Value="0,0,14,0" />
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36,6,36,32" MaxWidth="1060">
+            <TextBlock Text="Home" Style="{StaticResource PageTitle}" />
+            <TextBlock Style="{StaticResource PageSubtitle}"
+                       Text="Live usage of your PC. Nothing here changes your system. Pick individual tweaks from the pages on the left." />
+
+            <Border Margin="0,16,0,0" Padding="12,10" CornerRadius="8" Background="{StaticResource ErrorBackBrush}"
+                    BorderBrush="#5C2328" BorderThickness="1"
+                    Visibility="{Binding IsAdmin, Converter={StaticResource InverseBoolToVis}}">
+                <TextBlock TextWrapping="Wrap" Foreground="#FFC9C5"
+                           Text="PCOpti isn't running as administrator, so most tweaks will fail. Close it and start it again with &quot;Run as administrator&quot;." />
+            </Border>
+
+            <!-- Live stats -->
+            <UniformGrid Columns="4" Margin="0,20,0,0">
+                <Border Style="{StaticResource Card}" Margin="0,0,10,10">
+                    <StackPanel>
+                        <TextBlock Text="CPU" Style="{StaticResource StatLabel}" />
+                        <TextBlock Text="{Binding CpuText}" Style="{StaticResource StatValue}" />
+                        <ProgressBar Style="{StaticResource Meter}" Value="{Binding Cpu, Mode=OneWay}" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="0,0,10,10">
+                    <StackPanel>
+                        <TextBlock Text="MEMORY" Style="{StaticResource StatLabel}" />
+                        <TextBlock Text="{Binding RamText}" Style="{StaticResource StatValue}" />
+                        <ProgressBar Style="{StaticResource Meter}" Value="{Binding Ram, Mode=OneWay}" />
+                        <TextBlock Text="{Binding RamDetail}" FontSize="11" Foreground="{StaticResource MutedTextBrush}" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="0,0,10,10">
+                    <StackPanel>
+                        <TextBlock Text="DISK ACTIVITY" Style="{StaticResource StatLabel}" />
+                        <TextBlock Text="{Binding DiskText}" Style="{StaticResource StatValue}" />
+                        <ProgressBar Style="{StaticResource Meter}" Value="{Binding Disk, Mode=OneWay}" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="GPU (3D)" Style="{StaticResource StatLabel}" />
+                        <TextBlock Text="{Binding GpuText}" Style="{StaticResource StatValue}" />
+                        <ProgressBar Style="{StaticResource Meter}" Value="{Binding Gpu, Mode=OneWay}" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource Icon}" Text="&#xE81C;" FontSize="18" Foreground="{DynamicResource AccentBrush}" Margin="0,0,12,0" />
+                    <TextBlock VerticalAlignment="Center" FontSize="14">
+                        <Run Text="Active PCOpti changes:" Foreground="{StaticResource SubtleTextBrush}" />
+                        <Run Text="{Binding ActiveChanges, Mode=OneWay}" FontWeight="Bold" />
+                        <Run Text=" · each can be undone on its own page or from Backup &amp; Restore." Foreground="{StaticResource SubtleTextBrush}" />
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Guide -->
+            <TextBlock Text="QUICK GUIDE" Style="{StaticResource SectionHeader}" />
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,14">
+                        <Border Style="{StaticResource StepNumber}"><TextBlock Text="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" /></Border>
+                        <TextBlock Style="{StaticResource BodyText}"><Run Text="Startup Apps." FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" /> Turn off programs you don't need when you sign in. On most PCs this gives the biggest real improvement: faster boot and less running in the background while you play.</TextBlock>
+                    </DockPanel>
+                    <DockPanel Margin="0,0,0,14">
+                        <Border Style="{StaticResource StepNumber}"><TextBlock Text="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" /></Border>
+                        <TextBlock Style="{StaticResource BodyText}"><Run Text="Gaming Tweaks." FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" /> Read each card and apply only what you want. Safe tweaks are low-risk; Moderate and Advanced ones ask you to confirm first. Gains are usually small, and each card says so.</TextBlock>
+                    </DockPanel>
+                    <DockPanel Margin="0,0,0,14">
+                        <Border Style="{StaticResource StepNumber}"><TextBlock Text="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" /></Border>
+                        <TextBlock Style="{StaticResource BodyText}"><Run Text="Game Boost." FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" /> Before a session, close the background apps you picked, then reopen them afterwards.</TextBlock>
+                    </DockPanel>
+                    <DockPanel>
+                        <Border Style="{StaticResource StepNumber}"><TextBlock Text="4" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" /></Border>
+                        <TextBlock Style="{StaticResource BodyText}"><Run Text="Undo anything." FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" /> Every change is backed up before it happens. Each tweak has its own Revert button, and Backup &amp; Restore has a change log and &quot;Revert all PCOpti changes&quot;.</TextBlock>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="WHAT PCOPTI WON'T DO" Style="{StaticResource SectionHeader}" />
+            <Border Style="{StaticResource Card}">
+                <TextBlock Style="{StaticResource BodyText}"
+                           Text="No &quot;RAM boosters&quot;, no fake scans, no made-up &quot;87% faster&quot; scores, no telemetry, no ads and no bundled software. The only network request PCOpti can make is the optional update check in Settings. The best performance upgrades are still up-to-date GPU drivers, enough RAM, an SSD, and in-game settings that fit your hardware." />
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

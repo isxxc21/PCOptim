@@ -1,0 +1,141 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:PCOpti.ViewModels"
+                    xmlns:views="clr-namespace:PCOpti.Views">
+
+    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    <views:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis" />
+    <views:NotEmptyToVisibilityConverter x:Key="NotEmptyToVis" />
+    <views:PositiveToVisibilityConverter x:Key="PositiveToVis" />
+    <views:InverseBoolConverter x:Key="InverseBool" />
+    <views:RiskToBrushConverter x:Key="RiskBrush" />
+    <views:ImpactToBrushConverter x:Key="ImpactBrush" />
+    <views:ActionToBrushConverter x:Key="ActionBrush" />
+
+    <!-- Shared status line used at the top of pages (info or error). -->
+    <DataTemplate x:Key="StatusBanner">
+        <Border CornerRadius="8" Padding="12,10" Margin="0,0,0,14" BorderThickness="1"
+                Visibility="{Binding StatusMessage, Converter={StaticResource NotEmptyToVis}}">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+                    <Setter Property="BorderBrush" Value="#3300D1FF" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding StatusIsError}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource ErrorBackBrush}" />
+                            <Setter Property="BorderBrush" Value="#5C2328" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" Foreground="{StaticResource TextBrush}" />
+        </Border>
+    </DataTemplate>
+
+    <!-- ===================== Tweak card ===================== -->
+    <DataTemplate DataType="{x:Type vm:TweakCardViewModel}">
+        <Border Style="{StaticResource Card}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <WrapPanel>
+                        <TextBlock Text="{Binding Name}" Style="{StaticResource CardTitle}" Margin="0,0,10,4" VerticalAlignment="Center" />
+
+                        <!-- Risk badge -->
+                        <Border Style="{StaticResource Pill}" Margin="0,0,6,4"
+                                Background="{Binding Risk, Converter={StaticResource RiskBrush}, ConverterParameter=back}"
+                                BorderBrush="{Binding Risk, Converter={StaticResource RiskBrush}}">
+                            <TextBlock Text="{Binding RiskText}" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{Binding Risk, Converter={StaticResource RiskBrush}}" />
+                        </Border>
+
+                        <!-- Status chip -->
+                        <Border Margin="0,0,6,4">
+                            <Border.Style>
+                                <Style TargetType="Border" BasedOn="{StaticResource Pill}">
+                                    <Setter Property="Background" Value="#1AFFFFFF" />
+                                    <Setter Property="BorderBrush" Value="#33FFFFFF" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsApplied}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icon}" FontSize="10" Margin="0,0,5,0" Text="&#xE73E;"
+                                           Foreground="{DynamicResource AccentBrush}"
+                                           Visibility="{Binding IsApplied, Converter={StaticResource BoolToVis}}" />
+                                <TextBlock Text="{Binding StatusText}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" />
+                            </StackPanel>
+                        </Border>
+                    </WrapPanel>
+
+                    <TextBlock Text="{Binding Description}" Style="{StaticResource BodyText}" Margin="0,6,0,0" />
+
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0"
+                                Visibility="{Binding Note, Converter={StaticResource NotEmptyToVis}}">
+                        <TextBlock Style="{StaticResource Icon}" FontSize="12" Text="&#xE946;" Margin="0,0,6,0"
+                                   Foreground="{StaticResource MutedTextBrush}" />
+                        <TextBlock Text="{Binding Note}" FontSize="12" Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding UnavailableReason}" Margin="0,8,0,0" FontSize="12" TextWrapping="Wrap"
+                               Foreground="{StaticResource ModerateBrush}"
+                               Visibility="{Binding UnavailableReason, Converter={StaticResource NotEmptyToVis}}" />
+
+                    <!-- Error shown on this card only -->
+                    <Border Margin="0,10,0,0" Padding="10,8" CornerRadius="6" Background="{StaticResource ErrorBackBrush}"
+                            BorderBrush="#5C2328" BorderThickness="1"
+                            Visibility="{Binding ErrorMessage, Converter={StaticResource NotEmptyToVis}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource Icon}" FontSize="12" Text="&#xE783;" Margin="0,1,8,0"
+                                       VerticalAlignment="Top" Foreground="{StaticResource ErrorBrush}" />
+                            <TextBlock Text="{Binding ErrorMessage}" FontSize="12" TextWrapping="Wrap" Foreground="#FFC9C5" MaxWidth="620" />
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Text="{Binding SuccessMessage}" Margin="0,8,0,0" FontSize="12" Foreground="{StaticResource SuccessBrush}"
+                               Visibility="{Binding SuccessMessage, Converter={StaticResource NotEmptyToVis}}" />
+
+                    <ProgressBar Style="{StaticResource BusyBar}" Margin="0,10,0,0"
+                                 Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" />
+                </StackPanel>
+
+                <!-- Actions -->
+                <StackPanel Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Top" MinWidth="104">
+                    <StackPanel Visibility="{Binding UseToggle, Converter={StaticResource InverseBoolToVis}}">
+                        <Button Content="Apply" Style="{StaticResource PrimaryButton}" Command="{Binding ApplyCommand}"
+                                IsEnabled="{Binding IsAvailable}"
+                                Visibility="{Binding IsApplied, Converter={StaticResource InverseBoolToVis}}"
+                                ToolTip="Apply only this tweak. The current setting is backed up first." />
+                        <Button Content="Revert" Command="{Binding RevertCommand}"
+                                Visibility="{Binding IsApplied, Converter={StaticResource BoolToVis}}"
+                                ToolTip="Restore the setting PCOpti saved before applying (or the Windows default if there's no backup)." />
+                    </StackPanel>
+                    <ToggleButton Style="{StaticResource ToggleSwitch}" HorizontalAlignment="Right"
+                                  IsChecked="{Binding IsApplied, Mode=OneWay}" Command="{Binding ToggleCommand}"
+                                  IsEnabled="{Binding IsAvailable}"
+                                  Visibility="{Binding UseToggle, Converter={StaticResource BoolToVis}}"
+                                  ToolTip="On = set to Manual. Off = restore the original start type." />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===================== Page -> View mapping ===================== -->
+    <DataTemplate DataType="{x:Type vm:HomeViewModel}"><views:HomeView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:TweakPageViewModel}"><views:TweakPageView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:StartupViewModel}"><views:StartupView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:CleanerViewModel}"><views:CleanerView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:NetworkViewModel}"><views:NetworkView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:GameBoostViewModel}"><views:GameBoostView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:BackupViewModel}"><views:BackupView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:SettingsViewModel}"><views:SettingsView /></DataTemplate>
+
+</ResourceDictionary>

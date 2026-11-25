@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and test (windows-latest)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore PCOpti.sln
+
+      - name: Build
+        run: dotnet build PCOpti.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test PCOpti.sln -c Release --no-build --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/*.trx
+
+      # Proves the release build still works on every change (not uploaded as a release).
+      - name: Publish single-file exe (smoke test)
+        run: dotnet publish src/PCOpti/PCOpti.csproj -c Release -r win-x64 --self-contained true -o publish
+
+      - name: Upload exe (for testing this commit)
+        uses: actions/upload-artifact@v4
+        with:
+          name: PCOpti-${{ github.sha }}
+          path: publish/PCOpti.exe
+          retention-days: 7

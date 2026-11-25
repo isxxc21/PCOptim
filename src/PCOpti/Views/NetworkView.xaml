@@ -1,0 +1,103 @@
+<UserControl x:Class="PCOpti.Views.NetworkView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36,6,36,32" MaxWidth="1060">
+            <TextBlock Text="Network" Style="{StaticResource PageTitle}" />
+            <TextBlock Style="{StaticResource PageSubtitle}"
+                       Text="Tools that fix common connection problems, and a DNS switcher. PCOpti deliberately leaves out registry &quot;latency tweaks&quot; (TCP no-delay, throttling index and so on): they have no proven effect on modern Windows and can cause problems." />
+
+            <ProgressBar Style="{StaticResource BusyBar}" Margin="0,14,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" />
+            <ContentControl Margin="0,14,0,0" Content="{Binding}" ContentTemplate="{StaticResource StatusBanner}" Focusable="False" />
+
+            <!-- Flush DNS -->
+            <Border Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <WrapPanel>
+                            <TextBlock Text="Flush DNS cache" Style="{StaticResource CardTitle}" Margin="0,0,10,0" />
+                            <Border Style="{StaticResource Pill}" Background="#223FB950" BorderBrush="{StaticResource SafeBrush}">
+                                <TextBlock Text="Safe" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SafeBrush}" />
+                            </Border>
+                        </WrapPanel>
+                        <TextBlock Style="{StaticResource BodyText}" Margin="0,6,0,0"
+                                   Text="Clears Windows' saved list of website and server addresses. Useful when a site or game server moved and won't load. It doesn't lower ping. There's nothing to revert: Windows simply looks addresses up again." />
+                    </StackPanel>
+                    <Button Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Top" MinWidth="104" Content="Flush DNS"
+                            Style="{StaticResource PrimaryButton}" Command="{Binding FlushDnsCommand}" />
+                </Grid>
+            </Border>
+
+            <!-- Winsock -->
+            <Border Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <WrapPanel>
+                            <TextBlock Text="Reset Winsock" Style="{StaticResource CardTitle}" Margin="0,0,10,0" />
+                            <Border Style="{StaticResource Pill}" Background="#22F85149" BorderBrush="{StaticResource AdvancedBrush}">
+                                <TextBlock Text="Advanced" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource AdvancedBrush}" />
+                            </Border>
+                        </WrapPanel>
+                        <TextBlock Style="{StaticResource BodyText}" Margin="0,6,0,0"
+                                   Text="Resets Windows' network socket settings to their defaults. It's a repair tool for &quot;connected but no internet&quot; problems, not a speed boost. It resets to defaults, so it can't be reverted, and it needs a restart." />
+                    </StackPanel>
+                    <Button Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Top" MinWidth="104" Content="Reset..."
+                            Style="{StaticResource DangerButton}" Command="{Binding ResetWinsockCommand}" />
+                </Grid>
+            </Border>
+
+            <!-- DNS switcher -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <WrapPanel>
+                        <TextBlock Text="DNS provider" Style="{StaticResource CardTitle}" Margin="0,0,10,0" />
+                        <Border Style="{StaticResource Pill}" Background="#223FB950" BorderBrush="{StaticResource SafeBrush}">
+                            <TextBlock Text="Safe" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SafeBrush}" />
+                        </Border>
+                    </WrapPanel>
+                    <TextBlock Style="{StaticResource BodyText}" Margin="0,6,0,0"
+                               Text="Chooses which server turns names like store.steampowered.com into addresses. Cloudflare or Google can be faster and more reliable than some internet providers' DNS for loading pages and logging in. DNS does NOT change your in-game ping, because that depends on the route to the game server. Your current settings are saved before the first change." />
+
+                    <TextBlock Text="CONNECTED ADAPTERS" Style="{StaticResource SectionHeader}" Margin="0,14,0,6" />
+                    <ItemsControl ItemsSource="{Binding Adapters}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="12,8" Margin="0,0,0,6" CornerRadius="7" Background="{StaticResource SurfaceBrush}">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="12" Foreground="{StaticResource SubtleTextBrush}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="{Binding CurrentDns}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsAutomatic}" Value="True">
+                                                            <Setter Property="Text" Value="{Binding CurrentDns, StringFormat='Automatic ({0})'}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{StaticResource MutedTextBrush}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <WrapPanel Margin="0,10,0,0">
+                        <Button Content="Use Cloudflare (1.1.1.1)" Style="{StaticResource PrimaryButton}" Command="{Binding UseCloudflareCommand}" Margin="0,0,8,8" />
+                        <Button Content="Use Google (8.8.8.8)" Style="{StaticResource PrimaryButton}" Command="{Binding UseGoogleCommand}" Margin="0,0,8,8" />
+                        <Button Content="Automatic (from router)" Command="{Binding UseAutomaticCommand}" Margin="0,0,8,8" />
+                        <Button Content="Restore original DNS" Command="{Binding RestoreOriginalCommand}" Margin="0,0,8,8"
+                                Visibility="{Binding HasDnsBackup, Converter={StaticResource BoolToVis}}" />
+                        <Button Content="Refresh" Style="{StaticResource GhostButton}" Command="{Binding RefreshCommand}" Margin="0,0,8,8" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

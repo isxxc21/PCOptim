@@ -1,0 +1,65 @@
+name: Release
+
+# Push a tag like v1.0.0 (or v1.1.0-beta.1 for a pre-release) to publish a GitHub Release.
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write   # needed to create the release and upload the zip
+
+jobs:
+  release:
+    name: Publish release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Read version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $version = $tag.TrimStart('v')
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "prerelease=$($version.Contains('-'))" >> $env:GITHUB_OUTPUT
+
+      - name: Test
+        run: dotnet test PCOpti.sln -c Release
+
+      - name: Publish self-contained single-file exe
+        run: >
+          dotnet publish src/PCOpti/PCOpti.csproj
+          -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true
+          -p:Version=${{ steps.version.outputs.version }}
+          -o publish
+
+      - name: Zip and checksum
+        shell: pwsh
+        run: |
+          $name = "PCOpti-${{ steps.version.outputs.tag }}-win-x64"
+          Copy-Item LICENSE, README.md publish/
+          Compress-Archive -Path publish/PCOpti.exe, publish/LICENSE, publish/README.md -DestinationPath "$name.zip"
+          $hash = (Get-FileHash "$name.zip" -Algorithm SHA256).Hash.ToLower()
+          "$hash  $name.zip" | Out-File -Encoding ascii "$name.zip.sha256"
+          Get-Content "$name.zip.sha256"
+
+      - name: Create GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ steps.version.outputs.tag }}"
+          $ghArgs = @($tag, "PCOpti-$tag-win-x64.zip", "PCOpti-$tag-win-x64.zip.sha256",
+                      "--title", "PCOpti $tag", "--generate-notes", "--verify-tag")
+          if ("${{ steps.version.outputs.prerelease }}" -eq "True") { $ghArgs += "--prerelease" }
+          gh release create @ghArgs

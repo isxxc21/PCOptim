@@ -1,0 +1,48 @@
+name: Bug report
+description: Something didn't work, or a tweak/revert did the wrong thing
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! If a change caused a problem, you can undo it on the tweak's card or with
+        **Backup & Restore > Revert all PCOpti changes** while we look into it.
+  - type: input
+    id: version
+    attributes:
+      label: PCOpti version
+      description: Shown in Settings > About, e.g. v1.0.0
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      description: Run `winver`, e.g. "Windows 11 23H2 (build 22631.4460)"
+    validations:
+      required: true
+  - type: input
+    id: area
+    attributes:
+      label: Which tweak or page?
+      placeholder: e.g. Gaming Tweaks > Disable Game DVR
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you click, what did you expect, and what happened instead? Include any error shown on the card.
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Change log / error log
+      description: Relevant lines from Backup & Restore > Change log, or from %LocalAppData%\PCOpti\error.log
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I'm running the latest release
+        - label: PCOpti was running as administrator
